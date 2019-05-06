@@ -5,16 +5,26 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
-    Button one,two,three,four,five,six,seven,eight,nine,zero,add,sub,mult,div,equal;
-    EditText tf1;
+    Button one,two,three,four,five,six,seven,eight,nine,zero,add,sub,mult,div,equal,clear;
+    TextView tf1;
+    String input;
+    double ans;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        one = (Button)findViewById(R.id.button);
+        final MainActivity obj = new MainActivity();
+        one = findViewById(R.id.button);
         one.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,40 +98,96 @@ public class MainActivity extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tf1.append("+");
+                tf1.append(" + ");
             }
         });
         div = findViewById(R.id.button11);
         div.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tf1.append("/");
+                tf1.append(" / ");
             }
         });
         sub = findViewById(R.id.button12);
         sub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tf1.append("-");
+                tf1.append(" - ");
             }
         });
         mult = findViewById(R.id.button13);
         mult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tf1.append("X");
+                tf1.append(" X ");
             }
         });
         equal = findViewById(R.id.button14);
         equal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+               input = tf1.getText().toString() + " ";
+               ans = obj.calculate(input);
+               tf1.setText(""+ans);
             }
         });
-        tf1 = findViewById(R.id.Text1);
+        clear = findViewById(R.id.button16);
+        clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tf1.setText("");
+            }
+        });
+        tf1 = findViewById(R.id.textView);
     }
-    MainActivity() {
-
+    public double calculate(String instr){
+        String str[] = instr.split("\\s");
+        List<String> inp = new ArrayList<>();
+        ListIterator<String> li = inp.listIterator();
+        inp.addAll(Arrays.asList(str));
+        int x = inp.indexOf("/");
+        while (x>-1){
+            double a = Double.parseDouble(inp.get(x-1));
+            double b = Double.parseDouble(inp.get(x+1));
+            inp.remove(x+1);
+            inp.remove(x);
+            inp.remove(x-1);
+            inp.add(x-1,""+(a/b));
+            x = inp.indexOf("/");
+        }
+        x = inp.indexOf("X");
+        while (x>-1){
+            double a = Double.parseDouble(inp.get(x-1));
+            double b = Double.parseDouble(inp.get(x+1));
+            inp.remove(x+1);
+            inp.remove(x);
+            inp.remove(x-1);
+            inp.add(x-1,""+(a*b));
+            x = inp.indexOf("X");
+        }
+        x = inp.indexOf("+");
+        while (x>-1){
+            double a = Double.parseDouble(inp.get(x-1));
+            double b = Double.parseDouble(inp.get(x+1));
+            inp.remove(x+1);
+            inp.remove(x);
+            inp.remove(x-1);
+            inp.add(x-1,""+(a+b));
+            x = inp.indexOf("+");
+        }
+        x = inp.indexOf("-");
+        while (x>-1){
+            double a = Double.parseDouble(inp.get(x-1));
+            double b = Double.parseDouble(inp.get(x+1));
+            inp.remove(x+1);
+            inp.remove(x);
+            inp.remove(x-1);
+            inp.add(x-1,""+(a-b));
+            x = inp.indexOf("-");
+        }
+        if(inp.size() == 1)
+            return Double.parseDouble(inp.get(0));
+        else
+            return 0.0;
     }
 }
