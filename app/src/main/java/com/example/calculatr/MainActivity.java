@@ -4,17 +4,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
-    Button one,two,three,four,five,six,seven,eight,nine,zero,add,sub,mult,div,equal,clear;
+    Button one,two,three,four,five,six,seven,eight,nine,zero,add,sub,mult,div,equal,clear,dot,mod,b1,b2,exp;
     TextView tf1;
     String input;
     double ans;
@@ -138,14 +134,78 @@ public class MainActivity extends AppCompatActivity {
                 tf1.setText("");
             }
         });
+        dot = findViewById(R.id.button17);
+        dot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tf1.append(".");
+            }
+        });
+        mod = findViewById(R.id.button18);
+        mod.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tf1.append(" % ");
+            }
+        });
+        b1 = findViewById(R.id.button19);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tf1.append(" ( ");
+            }
+        });
+        b2 = findViewById(R.id.button20);
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tf1.append(" ) ");
+            }
+        });
+        exp = findViewById(R.id.button21);
+        exp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tf1.append(" ^ ");
+            }
+        });
         tf1 = findViewById(R.id.textView);
     }
     public double calculate(String instr){
+        String blist;
+        int x,y;
+        double ab;
+        while(instr.contains("(")) {
+            x = instr.indexOf("(");
+            y = instr.indexOf(")");
+            blist = instr.substring(x+2,y-1);
+            ab = calculate(blist);
+            instr = instr.replace(instr.substring(x-1,y+2),""+ab);
+        }
         String str[] = instr.split("\\s");
         List<String> inp = new ArrayList<>();
-        ListIterator<String> li = inp.listIterator();
         inp.addAll(Arrays.asList(str));
-        int x = inp.indexOf("/");
+        x = inp.indexOf("^");
+        while (x>-1){
+            double a = Double.parseDouble(inp.get(x-1));
+            double b = Double.parseDouble(inp.get(x+1));
+            inp.remove(x+1);
+            inp.remove(x);
+            inp.remove(x-1);
+            inp.add(x-1,""+(Math.pow(a,b)));
+            x = inp.indexOf("^");
+        }
+        x = inp.indexOf("%");
+        while (x>-1){
+            double a = Double.parseDouble(inp.get(x-1));
+            double b = Double.parseDouble(inp.get(x+1));
+            inp.remove(x+1);
+            inp.remove(x);
+            inp.remove(x-1);
+            inp.add(x-1,""+(a%b));
+            x = inp.indexOf("%");
+        }
+        x = inp.indexOf("/");
         while (x>-1){
             double a = Double.parseDouble(inp.get(x-1));
             double b = Double.parseDouble(inp.get(x+1));
